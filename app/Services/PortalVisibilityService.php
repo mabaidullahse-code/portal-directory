@@ -8,6 +8,7 @@ use App\Models\Department;
 use App\Models\Portal;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\Collection;
 
 class PortalVisibilityService
@@ -15,7 +16,7 @@ class PortalVisibilityService
     /**
      * Scope a portal query based on user role and department permissions.
      */
-    public function applyVisibleScope(Builder $query, User $user): Builder
+    public function applyVisibleScope(Builder|Relation $query, User $user): Builder|Relation
     {
         if ($user->isAdmin()) {
             return $query;
