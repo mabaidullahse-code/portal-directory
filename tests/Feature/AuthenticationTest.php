@@ -13,6 +13,14 @@ class AuthenticationTest extends TestCase
 {
     use RefreshDatabase;
 
+    public function test_login_screen_can_be_rendered(): void
+    {
+        $response = $this->get('/login');
+
+        $response->assertStatus(200);
+        $response->assertSee('Sign In to Portal');
+    }
+
     public function test_admin_can_login_and_is_redirected_to_admin_dashboard(): void
     {
         $admin = User::create([
