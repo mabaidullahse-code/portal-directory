@@ -212,7 +212,7 @@
 
         @foreach($deptData['employees'] as $empData)
             <div class="emp-heading">
-                👤 {{ $empData['employee']?->name ?? 'Staff' }}
+                {{ $empData['employee']?->name ?? 'Staff' }}
                 @if($empData['employee']?->designation)
                     <span style="font-weight: normal; color: #475569;">— {{ $empData['employee']->designation }}</span>
                 @endif
