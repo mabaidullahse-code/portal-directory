@@ -4,6 +4,9 @@ namespace App\Models;
 
 use App\Enums\UserRole;
 use App\Enums\UserStatus;
+use Filament\Models\Contracts\FilamentUser;
+use Filament\Models\Contracts\HasName;
+use Filament\Panel;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -12,9 +15,19 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
-class User extends Authenticatable
+class User extends Authenticatable implements FilamentUser, HasName
 {
     use HasFactory, Notifiable;
+
+    public function canAccessPanel(Panel $panel): bool
+    {
+        return $this->isActive();
+    }
+
+    public function getFilamentName(): string
+    {
+        return $this->name.($this->designation ? " ({$this->designation})" : '');
+    }
 
     protected $fillable = [
         'name',
@@ -27,6 +40,7 @@ class User extends Authenticatable
         'profile_photo_path',
         'status',
         'password',
+        'plain_password',
         'last_login_at',
         'last_login_ip',
     ];
@@ -73,6 +87,11 @@ class User extends Authenticatable
         return $this->role === UserRole::ADMIN;
     }
 
+    public function isVc(): bool
+    {
+        return $this->role === UserRole::VC;
+    }
+
     public function isDirector(): bool
     {
         return $this->role === UserRole::DIRECTOR;
@@ -95,6 +114,7 @@ class User extends Authenticatable
         foreach (array_slice($words, 0, 2) as $w) {
             $initials .= mb_strtoupper(mb_substr($w, 0, 1));
         }
+
         return $initials ?: 'U';
     }
 
@@ -106,6 +126,11 @@ class User extends Authenticatable
     public function scopeAdmins(Builder $query): Builder
     {
         return $query->where('role', UserRole::ADMIN->value);
+    }
+
+    public function scopeVcs(Builder $query): Builder
+    {
+        return $query->where('role', UserRole::VC->value);
     }
 
     public function scopeDirectors(Builder $query): Builder
@@ -131,10 +156,10 @@ class User extends Authenticatable
 
         return $query->where(function (Builder $q) use ($term) {
             $q->where('name', 'like', "%{$term}%")
-              ->orWhere('email', 'like', "%{$term}%")
-              ->orWhere('employee_id', 'like', "%{$term}%")
-              ->orWhere('designation', 'like', "%{$term}%")
-              ->orWhere('phone', 'like', "%{$term}%");
+                ->orWhere('email', 'like', "%{$term}%")
+                ->orWhere('employee_id', 'like', "%{$term}%")
+                ->orWhere('designation', 'like', "%{$term}%")
+                ->orWhere('phone', 'like', "%{$term}%");
         });
     }
 }

@@ -5,7 +5,6 @@ namespace App\Services;
 use App\Models\ActivityLog;
 use App\Models\Department;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Validator;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 
 class DepartmentImportService
@@ -36,17 +35,17 @@ class DepartmentImportService
         $headerMap = [];
 
         foreach ($firstRow as $colKey => $colValue) {
-            $normalized = strtolower(trim((string)$colValue));
+            $normalized = strtolower(trim((string) $colValue));
             $normalized = str_replace([' ', '-', '/'], '_', $normalized);
-            if (!empty($normalized)) {
+            if (! empty($normalized)) {
                 $headers[$colKey] = $normalized;
                 $headerMap[$normalized] = $colKey;
             }
         }
 
         $parsedRows = [];
-        $existingNames = Department::pluck('name')->map(fn($v) => strtolower(trim($v)))->toArray();
-        $existingCodes = Department::pluck('code')->map(fn($v) => strtoupper(trim($v)))->toArray();
+        $existingNames = Department::pluck('name')->map(fn ($v) => strtolower(trim($v)))->toArray();
+        $existingCodes = Department::pluck('code')->map(fn ($v) => strtoupper(trim($v)))->toArray();
 
         $batchNames = [];
         $batchCodes = [];
@@ -60,16 +59,17 @@ class DepartmentImportService
             $rowValues = array_filter(array_map('trim', array_values($row)));
             if (empty($rowValues)) {
                 $rowIndex++;
+
                 continue;
             }
 
-            $name = trim((string)($row[$headerMap['name'] ?? 'A'] ?? ''));
-            $shortName = trim((string)($row[$headerMap['short_name'] ?? 'B'] ?? ''));
-            $code = strtoupper(trim((string)($row[$headerMap['code'] ?? 'C'] ?? '')));
-            $description = trim((string)($row[$headerMap['description'] ?? 'D'] ?? ''));
-            $status = strtolower(trim((string)($row[$headerMap['status'] ?? 'E'] ?? 'active')));
+            $name = trim((string) ($row[$headerMap['name'] ?? 'A'] ?? ''));
+            $shortName = trim((string) ($row[$headerMap['short_name'] ?? 'B'] ?? ''));
+            $code = strtoupper(trim((string) ($row[$headerMap['code'] ?? 'C'] ?? '')));
+            $description = trim((string) ($row[$headerMap['description'] ?? 'D'] ?? ''));
+            $status = strtolower(trim((string) ($row[$headerMap['status'] ?? 'E'] ?? 'active')));
 
-            if (!in_array($status, ['active', 'inactive'])) {
+            if (! in_array($status, ['active', 'inactive'])) {
                 $status = 'active';
             }
 
@@ -125,7 +125,6 @@ class DepartmentImportService
     /**
      * Commit valid records to the database.
      *
-     * @param array $rows
      * @return array{imported: int, skipped: int}
      */
     public function importValidRows(array $rows): array
@@ -137,6 +136,7 @@ class DepartmentImportService
             foreach ($rows as $row) {
                 if (empty($row['is_valid'])) {
                     $skippedCount++;
+
                     continue;
                 }
 
@@ -147,6 +147,7 @@ class DepartmentImportService
 
                 if ($exists) {
                     $skippedCount++;
+
                     continue;
                 }
 

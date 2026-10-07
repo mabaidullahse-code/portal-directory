@@ -13,15 +13,21 @@ class DepartmentIndex extends Component
     use WithPagination;
 
     public string $search = '';
+
     public string $statusFilter = 'all';
 
     public bool $showModal = false;
+
     public ?int $editingDepartmentId = null;
 
     public string $name = '';
+
     public string $short_name = '';
+
     public string $code = '';
+
     public string $description = '';
+
     public string $status = 'active';
 
     protected function rules(): array
@@ -125,11 +131,13 @@ class DepartmentIndex extends Component
 
         if ($dept->users()->exists()) {
             session()->flash('error', "Cannot delete department '{$dept->name}' because it has assigned users.");
+
             return;
         }
 
         if ($dept->portals()->exists()) {
             session()->flash('error', "Cannot delete department '{$dept->name}' because it owns registered portals.");
+
             return;
         }
 

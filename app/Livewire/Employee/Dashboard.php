@@ -11,9 +11,13 @@ use Livewire\Component;
 class Dashboard extends Component
 {
     public string $search = '';
+
     public string $statusFilter = 'all';
+
     public string $categoryFilter = 'all';
+
     public string $sortOrder = 'latest';
+
     public string $viewLayout = 'grid'; // grid or list
 
     public function render()
@@ -50,9 +54,9 @@ class Dashboard extends Component
         $targetedToMe = Portal::query()
             ->where('user_id', '!=', $employee->id)
             ->where(function ($q) use ($employee) {
-                $q->whereHas('targetUsers', fn($uq) => $uq->where('users.id', $employee->id));
+                $q->whereHas('targetUsers', fn ($uq) => $uq->where('users.id', $employee->id));
                 if ($employee->department_id) {
-                    $q->orWhereHas('targetDepartments', fn($dq) => $dq->where('departments.id', $employee->department_id));
+                    $q->orWhereHas('targetDepartments', fn ($dq) => $dq->where('departments.id', $employee->department_id));
                 }
             })
             ->active()

@@ -3,47 +3,63 @@
 namespace App\Livewire\Portal;
 
 use App\Enums\PortalStatus;
-use App\Enums\UserRole;
 use App\Models\ActivityLog;
 use App\Models\Category;
 use App\Models\Department;
 use App\Models\Portal;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Validation\Rule;
 use Livewire\Component;
 
 class PortalForm extends Component
 {
     public ?Portal $portal = null;
+
     public bool $isEditing = false;
 
     // Fields
     public string $title = '';
+
     public string $url = '';
+
     public string $purpose = '';
+
     public string $description = '';
+
     public string $status = 'active';
+
     public ?string $opening_date = null;
+
     public ?string $closing_date = null;
+
     public ?int $category_id = null;
-    public ?int $user_id = null; // Admin can assign, otherwise current user
-    public ?int $department_id = null; // Automatically assigned from owner
+
+    public string $target_department = '';
+
     public string $contact_person = '';
+
     public string $contact_email = '';
+
     public string $contact_phone = '';
+
     public string $tags_string = '';
+
     public string $version = '';
+
     public string $remarks = '';
+
     public int $sort_order = 0;
 
     // Multi-select targets
     public array $target_department_ids = [];
+
     public array $target_user_ids = [];
 
     // Target user picker filter helpers
     public string $targetUserSearch = '';
+
     public string $targetUserDeptFilter = 'all';
 
     public function mount(?Portal $portal = null): void
@@ -64,12 +80,11 @@ class PortalForm extends Component
             $this->opening_date = $portal->opening_date?->format('Y-m-d');
             $this->closing_date = $portal->closing_date?->format('Y-m-d');
             $this->category_id = $portal->category_id;
-            $this->user_id = $portal->user_id;
-            $this->department_id = $portal->department_id;
+            $this->target_department = $portal->target_department ?? ($portal->department?->name ?? '');
             $this->contact_person = $portal->contact_person ?? '';
             $this->contact_email = $portal->contact_email ?? '';
             $this->contact_phone = $portal->contact_phone ?? '';
-            $this->tags_string = !empty($portal->tags) ? implode(', ', $portal->tags) : '';
+            $this->tags_string = ! empty($portal->tags) ? implode(', ', $portal->tags) : '';
             $this->version = $portal->version ?? '';
             $this->remarks = $portal->remarks ?? '';
             $this->sort_order = $portal->sort_order ?? 0;
@@ -80,22 +95,11 @@ class PortalForm extends Component
             $this->authorize('create', Portal::class);
 
             $this->isEditing = false;
-            $this->user_id = $currentUser->id;
-            $this->department_id = $currentUser->department_id;
+            $this->target_department = '';
             $this->status = 'active';
             $this->contact_person = $currentUser->name;
             $this->contact_email = $currentUser->email;
             $this->contact_phone = $currentUser->phone ?? '';
-        }
-    }
-
-    public function updatedUserId($newUserId): void
-    {
-        if (Auth::user()->isAdmin() && $newUserId) {
-            $owner = User::find($newUserId);
-            if ($owner && $owner->department_id) {
-                $this->department_id = $owner->department_id;
-            }
         }
     }
 
@@ -109,13 +113,14 @@ class PortalForm extends Component
                     $fail('The URL contains an insecure or disallowed protocol.');
                 }
                 // Verify valid URL format
-                $normalized = preg_match('~^https?://~i', $trimmed) ? $trimmed : 'https://' . $trimmed;
-                if (!filter_var($normalized, FILTER_VALIDATE_URL)) {
+                $normalized = preg_match('~^https?://~i', $trimmed) ? $trimmed : 'https://'.$trimmed;
+                if (! filter_var($normalized, FILTER_VALIDATE_URL)) {
                     $fail('The URL format is invalid.');
                 }
             }],
             'purpose' => ['nullable', 'string', 'max:255'],
             'description' => ['nullable', 'string'],
+            'target_department' => ['nullable', 'string', 'max:255'],
             'status' => ['required', Rule::in(['active', 'inactive'])],
             'opening_date' => ['nullable', 'date'],
             'closing_date' => ['nullable', 'date', 'after_or_equal:opening_date'],
@@ -141,25 +146,18 @@ class PortalForm extends Component
 
         // Normalize URL
         $cleanUrl = trim($this->url);
-        if (!preg_match('~^https?://~i', $cleanUrl)) {
-            $cleanUrl = 'https://' . $cleanUrl;
+        if (! preg_match('~^https?://~i', $cleanUrl)) {
+            $cleanUrl = 'https://'.$cleanUrl;
         }
 
         // Parse tags
         $tags = [];
-        if (!empty($this->tags_string)) {
+        if (! empty($this->tags_string)) {
             $tags = array_values(array_filter(array_map('trim', explode(',', $this->tags_string))));
         }
 
-        // Determine owner & department
-        $ownerId = $this->user_id;
-        if (!$currentUser->isAdmin()) {
-            $ownerId = $currentUser->id;
-            $deptId = $currentUser->department_id;
-        } else {
-            $owner = User::find($ownerId);
-            $deptId = $owner?->department_id ?: $this->department_id ?: Department::first()?->id;
-        }
+        $userId = $this->isEditing && $this->portal ? ($this->portal->user_id ?? $currentUser->id) : $currentUser->id;
+        $departmentId = $this->isEditing && $this->portal ? ($this->portal->department_id ?? $currentUser->department_id) : $currentUser->department_id;
 
         $data = [
             'title' => $this->title,
@@ -170,8 +168,9 @@ class PortalForm extends Component
             'opening_date' => $this->opening_date ?: null,
             'closing_date' => $this->closing_date ?: null,
             'category_id' => $this->category_id ?: null,
-            'user_id' => $ownerId,
-            'department_id' => $deptId,
+            'user_id' => $userId,
+            'department_id' => $departmentId,
+            'target_department' => $this->target_department ?: null,
             'contact_person' => $this->contact_person ?: null,
             'contact_email' => $this->contact_email ?: null,
             'contact_phone' => $this->contact_phone ?: null,
@@ -214,7 +213,13 @@ class PortalForm extends Component
 
         // Role-based redirection
         if ($currentUser->isAdmin()) {
-            $this->redirect(route('admin.portals.index'));
+            if (Route::has('admin.portals.index')) {
+                $this->redirect(route('admin.portals.index'));
+            } elseif (Route::has('filament.admin.resources.portals.index')) {
+                $this->redirect(route('filament.admin.resources.portals.index'));
+            } else {
+                $this->redirect('/admin/portals');
+            }
         } elseif ($currentUser->isDirector()) {
             $this->redirect(route('director.my-portals'));
         } else {
@@ -232,19 +237,15 @@ class PortalForm extends Component
         if ($this->targetUserDeptFilter !== 'all') {
             $usersQuery->where('department_id', $this->targetUserDeptFilter);
         }
-        if (!empty($this->targetUserSearch)) {
+        if (! empty($this->targetUserSearch)) {
             $usersQuery->search($this->targetUserSearch);
         }
         $availableUsers = $usersQuery->take(30)->get();
-
-        // Owner users list if Admin
-        $ownerUsers = Auth::user()->isAdmin() ? User::active()->with('department')->orderBy('name')->get() : collect();
 
         return view('livewire.portal.portal-form', [
             'categories' => $categories,
             'departments' => $departments,
             'availableUsers' => $availableUsers,
-            'ownerUsers' => $ownerUsers,
         ])->layout('layouts.app', ['title' => $this->isEditing ? 'Edit Portal' : 'Register New Portal']);
     }
 }

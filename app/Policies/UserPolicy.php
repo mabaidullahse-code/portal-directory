@@ -40,7 +40,7 @@ class UserPolicy
 
     public function delete(User $user, User $model): bool
     {
-        if (!$user->isAdmin()) {
+        if (! $user->isAdmin()) {
             return false;
         }
 

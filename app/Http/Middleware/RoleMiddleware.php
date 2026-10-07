@@ -12,17 +12,17 @@ class RoleMiddleware
     /**
      * Handle an incoming request.
      *
-     * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
+     * @param  Closure(Request): (Response)  $next
      */
     public function handle(Request $request, Closure $next, string ...$roles): Response
     {
         $user = Auth::user();
 
-        if (!$user) {
+        if (! $user) {
             return redirect()->route('login');
         }
 
-        if (!$user->isActive()) {
+        if (! $user->isActive()) {
             Auth::logout();
             $request->session()->invalidate();
             $request->session()->regenerateToken();
@@ -34,7 +34,7 @@ class RoleMiddleware
 
         $userRoleValue = is_string($user->role) ? $user->role : $user->role->value;
 
-        if (!empty($roles) && !in_array($userRoleValue, $roles, true)) {
+        if (! empty($roles) && ! in_array($userRoleValue, $roles, true)) {
             abort(403, 'Unauthorized access: your role does not have permission to view this resource.');
         }
 

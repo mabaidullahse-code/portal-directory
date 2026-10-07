@@ -21,7 +21,7 @@ class DepartmentEmployees extends Component
 
         $employees = User::where('department_id', $department->id)
             ->where('role', UserRole::EMPLOYEE->value)
-            ->with(['portals' => fn($q) => $q->orderBy('sort_order')->orderBy('title')])
+            ->with(['portals' => fn ($q) => $q->orderBy('sort_order')->orderBy('title')])
             ->withCount('portals')
             ->search($this->search)
             ->orderBy('name')

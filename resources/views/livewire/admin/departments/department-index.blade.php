@@ -1,11 +1,11 @@
 <div>
-    <x-slot name="header">
+    <div class="mb-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
             <h1 class="text-xl font-bold text-slate-900">Department Management</h1>
             <p class="text-xs text-slate-500">Configure organizational wings, functional divisions, and operational departments.</p>
         </div>
         <div class="flex items-center gap-2">
-            <a href="{{ route('admin.departments.import') }}"
+            <a href="{{ route('filament.admin.pages.department-import') }}"
                class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold text-slate-700 bg-white border border-slate-200 hover:bg-slate-50 transition shadow-xs">
                 <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
                 <span>Import Excel/CSV</span>
@@ -16,7 +16,7 @@
                 <span>Add Department</span>
             </button>
         </div>
-    </x-slot>
+    </div>
 
     <!-- Filters Bar -->
     <div class="bg-white rounded-2xl border border-slate-200 p-4 shadow-xs mb-6">

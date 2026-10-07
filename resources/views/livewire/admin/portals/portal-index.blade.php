@@ -1,5 +1,5 @@
 <div>
-    <x-slot name="header">
+    <div class="mb-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
             <h1 class="text-xl font-bold text-slate-900">All Registered Portals</h1>
             <p class="text-xs text-slate-500">Global catalog of internal and external organization endpoints across all wings.</p>
@@ -16,7 +16,7 @@
                 <span>Register Portal</span>
             </a>
         </div>
-    </x-slot>
+    </div>
 
     <!-- Filter Bar -->
     <div class="bg-white rounded-2xl border border-slate-200 p-4 shadow-xs mb-6">

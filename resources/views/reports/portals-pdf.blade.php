@@ -207,16 +207,16 @@
 
     @forelse($departments as $deptData)
         <div class="dept-banner">
-            {{ $deptData['department']->name }} ({{ $deptData['department']->code }}) — {{ $deptData['total_portals'] }} Portals
+            {{ $deptData['department']?->name ?? 'General & Universal Systems' }} ({{ $deptData['department']?->code ?? 'UNIV' }}) — {{ $deptData['total_portals'] ?? 0 }} Portals
         </div>
 
         @foreach($deptData['employees'] as $empData)
             <div class="emp-heading">
-                👤 {{ $empData['employee']->name }}
-                @if($empData['employee']->designation)
+                👤 {{ $empData['employee']?->name ?? 'Staff' }}
+                @if($empData['employee']?->designation)
                     <span style="font-weight: normal; color: #475569;">— {{ $empData['employee']->designation }}</span>
                 @endif
-                <span style="float: right; font-weight: normal;">{{ $empData['total'] }} portal(s)</span>
+                <span style="float: right; font-weight: normal;">{{ $empData['total'] ?? 0 }} portal(s)</span>
             </div>
 
             <table class="data-table">

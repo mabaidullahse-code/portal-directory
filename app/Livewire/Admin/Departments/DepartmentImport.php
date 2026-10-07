@@ -3,17 +3,20 @@
 namespace App\Livewire\Admin\Departments;
 
 use App\Services\DepartmentImportService;
-use Illuminate\Support\Facades\Storage;
 use Livewire\Component;
 use Livewire\WithFileUploads;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class DepartmentImport extends Component
 {
     use WithFileUploads;
 
     public $file;
+
     public array $parsedData = [];
+
     public bool $hasPreview = false;
+
     public ?array $importSummary = null;
 
     protected function rules(): array
@@ -34,7 +37,7 @@ class DepartmentImport extends Component
             $this->hasPreview = true;
             $this->importSummary = null;
         } catch (\Throwable $e) {
-            $this->addError('file', 'Error parsing file: ' . $e->getMessage());
+            $this->addError('file', 'Error parsing file: '.$e->getMessage());
         }
     }
 
@@ -42,6 +45,7 @@ class DepartmentImport extends Component
     {
         if (empty($this->parsedData['rows'])) {
             session()->flash('error', 'No rows available for import.');
+
             return;
         }
 
@@ -53,11 +57,11 @@ class DepartmentImport extends Component
 
             session()->flash('success', "Import completed: {$result['imported']} departments successfully added.");
         } catch (\Throwable $e) {
-            session()->flash('error', 'Failed during import commit: ' . $e->getMessage());
+            session()->flash('error', 'Failed during import commit: '.$e->getMessage());
         }
     }
 
-    public function downloadSampleCsv(): \Symfony\Component\HttpFoundation\StreamedResponse
+    public function downloadSampleCsv(): StreamedResponse
     {
         $csvHeader = ['name', 'short_name', 'code', 'description', 'status'];
         $sampleRows = [

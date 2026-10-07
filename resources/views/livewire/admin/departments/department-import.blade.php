@@ -1,5 +1,6 @@
 <div>
-    <x-slot name="header">
+    <!-- Page Header -->
+    <div class="mb-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4 border-b border-slate-200 pb-5">
         <div>
             <h1 class="text-xl font-bold text-slate-900">Import Departments via Excel or CSV</h1>
             <p class="text-xs text-slate-500">Bulk upload departments with automated format validation and duplicate suppression.</p>
@@ -10,12 +11,12 @@
                 <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
                 <span>Download Sample CSV</span>
             </button>
-            <a href="{{ route('admin.departments.index') }}"
+            <a href="{{ route('filament.admin.resources.departments.index') }}"
                class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold text-slate-700 bg-white border border-slate-200 hover:bg-slate-50 transition shadow-xs">
                 <span>Back to Departments</span>
             </a>
         </div>
-    </x-slot>
+    </div>
 
     <!-- Upload Box -->
     <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-xs mb-6">

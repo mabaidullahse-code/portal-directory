@@ -4,7 +4,6 @@ namespace App\Livewire\Admin;
 
 use App\Enums\PortalStatus;
 use App\Enums\UserRole;
-use App\Enums\UserStatus;
 use App\Models\ActivityLog;
 use App\Models\Category;
 use App\Models\Department;

@@ -4,7 +4,6 @@ namespace App\Livewire\Admin\Settings;
 
 use App\Enums\PortalDisplayDesign;
 use App\Models\ActivityLog;
-use App\Models\Department;
 use App\Models\Setting;
 use App\Services\PortalVisibilityService;
 use Illuminate\Support\Facades\Auth;
@@ -13,6 +12,7 @@ use Livewire\Component;
 class DirectoryDesign extends Component
 {
     public string $currentSavedDesign = 'card_grid';
+
     public string $selectedPreviewDesign = 'card_grid';
 
     public function mount(): void

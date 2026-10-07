@@ -18,23 +18,36 @@ class UserIndex extends Component
     use WithPagination;
 
     public string $search = '';
+
     public string $roleFilter = 'all';
+
     public string $departmentFilter = 'all';
+
     public string $statusFilter = 'all';
 
     public bool $showUserModal = false;
+
     public ?int $editingUserId = null;
 
     // Form fields
     public string $name = '';
+
     public string $employee_id = '';
+
     public string $email = '';
+
     public string $phone = '';
+
     public string $designation = '';
+
     public string $role = 'employee';
+
     public ?int $department_id = null;
+
     public string $status = 'active';
+
     public string $password = '';
+
     public string $password_confirmation = '';
 
     protected function rules(): array
@@ -47,9 +60,9 @@ class UserIndex extends Component
             'email' => ['required', 'email', 'max:255', Rule::unique('users', 'email')->ignore($userId)],
             'phone' => ['nullable', 'string', 'max:50'],
             'designation' => ['nullable', 'string', 'max:255'],
-            'role' => ['required', Rule::in(['admin', 'director', 'employee'])],
+            'role' => ['required', Rule::in(['admin', 'vc', 'director', 'employee'])],
             'department_id' => [
-                Rule::requiredIf(fn() => in_array($this->role, ['director', 'employee'])),
+                Rule::requiredIf(fn () => in_array($this->role, ['director', 'employee'])),
                 'nullable',
                 'exists:departments,id',
             ],
@@ -60,7 +73,7 @@ class UserIndex extends Component
 
     public function updatedRole($value): void
     {
-        if ($value === 'admin') {
+        if (in_array($value, ['admin', 'vc'])) {
             $this->department_id = null;
         }
     }
@@ -103,11 +116,11 @@ class UserIndex extends Component
             'phone' => $this->phone ?: null,
             'designation' => $this->designation ?: null,
             'role' => UserRole::from($this->role),
-            'department_id' => $this->role === 'admin' ? null : $this->department_id,
+            'department_id' => in_array($this->role, ['admin', 'vc']) ? null : $this->department_id,
             'status' => UserStatus::from($this->status),
         ];
 
-        if (!empty($this->password)) {
+        if (! empty($this->password)) {
             $data['password'] = Hash::make($this->password);
         }
 
@@ -147,6 +160,7 @@ class UserIndex extends Component
         $user = User::findOrFail($id);
         if ($user->id === Auth::id()) {
             session()->flash('error', 'You cannot deactivate your own account.');
+
             return;
         }
 
@@ -170,11 +184,13 @@ class UserIndex extends Component
         $user = User::findOrFail($id);
         if ($user->id === Auth::id()) {
             session()->flash('error', 'You cannot delete your own account.');
+
             return;
         }
 
         if ($user->portals()->exists()) {
             session()->flash('error', "Cannot delete user '{$user->name}' because they own active portals. Reassign or delete portals first.");
+
             return;
         }
 

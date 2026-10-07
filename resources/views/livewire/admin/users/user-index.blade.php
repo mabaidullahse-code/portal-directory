@@ -1,5 +1,5 @@
 <div>
-    <x-slot name="header">
+    <div class="mb-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
             <h1 class="text-xl font-bold text-slate-900">User Management</h1>
             <p class="text-xs text-slate-500">Manage administrator, director, and employee access accounts across all departments.</p>
@@ -9,7 +9,7 @@
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
             <span>Create User</span>
         </button>
-    </x-slot>
+    </div>
 
     <!-- Filters Bar -->
     <div class="bg-white rounded-2xl border border-slate-200 p-4 shadow-xs mb-6">
@@ -28,6 +28,7 @@
                         class="w-full rounded-lg border border-slate-300 px-3 py-1.5 text-xs text-slate-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500">
                     <option value="all">All Roles</option>
                     <option value="admin">Administrator</option>
+                    <option value="vc">Vice Chancellor</option>
                     <option value="director">Director</option>
                     <option value="employee">Employee</option>
                 </select>
@@ -166,7 +167,7 @@
 
                             <div class="space-y-3">
                                 <div>
-                                    <label class="block text-xs font-semibold text-slate-700">Full Name *</label>
+                                    <label class="block text-xs font-semibold text-slate-700">Full Name / Username *</label>
                                     <input type="text" wire:model="name"
                                            class="mt-1 block w-full rounded-lg border border-slate-300 px-3 py-1.5 text-xs text-slate-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500">
                                     @error('name') <span class="text-xs text-rose-600">{{ $message }}</span> @enderror
@@ -180,7 +181,7 @@
                                         @error('employee_id') <span class="text-xs text-rose-600">{{ $message }}</span> @enderror
                                     </div>
                                     <div>
-                                        <label class="block text-xs font-semibold text-slate-700">Email Address *</label>
+                                        <label class="block text-xs font-semibold text-slate-700">Email Address (Login Username) *</label>
                                         <input type="email" wire:model="email"
                                                class="mt-1 block w-full rounded-lg border border-slate-300 px-3 py-1.5 text-xs text-slate-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500">
                                         @error('email') <span class="text-xs text-rose-600">{{ $message }}</span> @enderror
@@ -209,6 +210,7 @@
                                                 class="mt-1 block w-full rounded-lg border border-slate-300 px-3 py-1.5 text-xs text-slate-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500">
                                             <option value="employee">Employee</option>
                                             <option value="director">Director</option>
+                                            <option value="vc">Vice Chancellor (Executive)</option>
                                             <option value="admin">Administrator</option>
                                         </select>
                                         @error('role') <span class="text-xs text-rose-600">{{ $message }}</span> @enderror
@@ -225,7 +227,7 @@
                                     </div>
                                 </div>
 
-                                @if ($role !== 'admin')
+                                @if (!in_array($role, ['admin', 'vc']))
                                     <div>
                                         <label class="block text-xs font-semibold text-slate-700">Department *</label>
                                         <select wire:model="department_id"
@@ -239,19 +241,29 @@
                                     </div>
                                 @endif
 
-                                <div class="grid grid-cols-2 gap-3 pt-2 border-t border-slate-100">
-                                    <div>
-                                        <label class="block text-xs font-semibold text-slate-700">
-                                            {{ $editingUserId ? 'New Password (Optional)' : 'Password *' }}
-                                        </label>
-                                        <input type="password" wire:model="password"
-                                               class="mt-1 block w-full rounded-lg border border-slate-300 px-3 py-1.5 text-xs text-slate-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500">
-                                        @error('password') <span class="text-xs text-rose-600">{{ $message }}</span> @enderror
+                                <div class="pt-3 border-t border-slate-100">
+                                    <div class="mb-2">
+                                        <span class="text-xs font-bold text-slate-800">
+                                            {{ $editingUserId ? 'Change Password' : 'Set Password *' }}
+                                        </span>
+                                        @if($editingUserId)
+                                            <span class="text-[11px] text-slate-500 block">Leave blank to keep existing password, or enter new password below.</span>
+                                        @endif
                                     </div>
-                                    <div>
-                                        <label class="block text-xs font-semibold text-slate-700">Confirm Password</label>
-                                        <input type="password" wire:model="password_confirmation"
-                                               class="mt-1 block w-full rounded-lg border border-slate-300 px-3 py-1.5 text-xs text-slate-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500">
+                                    <div class="grid grid-cols-2 gap-3">
+                                        <div>
+                                            <label class="block text-xs font-semibold text-slate-700">
+                                                {{ $editingUserId ? 'New Password' : 'Password *' }}
+                                            </label>
+                                            <input type="password" wire:model="password" placeholder="Min. 8 characters"
+                                                   class="mt-1 block w-full rounded-lg border border-slate-300 px-3 py-1.5 text-xs text-slate-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500">
+                                            @error('password') <span class="text-xs text-rose-600">{{ $message }}</span> @enderror
+                                        </div>
+                                        <div>
+                                            <label class="block text-xs font-semibold text-slate-700">Confirm Password</label>
+                                            <input type="password" wire:model="password_confirmation" placeholder="Re-type password"
+                                                   class="mt-1 block w-full rounded-lg border border-slate-300 px-3 py-1.5 text-xs text-slate-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500">
+                                        </div>
                                     </div>
                                 </div>
                             </div>

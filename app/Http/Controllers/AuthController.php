@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Enums\UserRole;
-use App\Enums\UserStatus;
 use App\Models\ActivityLog;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
@@ -38,7 +37,7 @@ class AuthController extends Controller
         if (Auth::attempt($credentials, $remember)) {
             $user = Auth::user();
 
-            if (!$user->isActive()) {
+            if (! $user->isActive()) {
                 Auth::logout();
                 $request->session()->invalidate();
                 $request->session()->regenerateToken();
@@ -88,7 +87,7 @@ class AuthController extends Controller
         $request->validate(['email' => 'required|email']);
 
         $user = User::where('email', $request->email)->first();
-        if (!$user) {
+        if (! $user) {
             return back()->withErrors(['email' => 'We could not find a user with that email address.']);
         }
 
@@ -118,7 +117,7 @@ class AuthController extends Controller
 
         $user = User::where('email', $request->email)->first();
 
-        if (!$user || !Password::broker()->tokenExists($user, $request->token)) {
+        if (! $user || ! Password::broker()->tokenExists($user, $request->token)) {
             return back()->withErrors(['email' => 'Invalid or expired password reset token.']);
         }
 
@@ -154,7 +153,7 @@ class AuthController extends Controller
         $oldValues = $user->only(['name', 'phone', 'designation']);
         $user->update($validated);
 
-        ActivityLog::record('user.profile_updated', "Updated profile details", $user, $oldValues, $validated);
+        ActivityLog::record('user.profile_updated', 'Updated profile details', $user, $oldValues, $validated);
 
         return back()->with('success', 'Profile updated successfully.');
     }
@@ -172,7 +171,7 @@ class AuthController extends Controller
             'password' => Hash::make($validated['password']),
         ]);
 
-        ActivityLog::record('user.password_changed', "Changed password", $user);
+        ActivityLog::record('user.password_changed', 'Changed password', $user);
 
         return back()->with('success', 'Password changed successfully.');
     }
@@ -183,7 +182,8 @@ class AuthController extends Controller
             UserRole::ADMIN => redirect()->intended(route('admin.dashboard')),
             UserRole::DIRECTOR => redirect()->intended(route('director.dashboard')),
             UserRole::EMPLOYEE => redirect()->intended(route('employee.dashboard')),
-            default => redirect()->intended(route('directory.index')),
+            UserRole::VC => redirect()->intended(route('vc.dashboard')),
+            default => redirect()->intended('/admin'),
         };
     }
 }

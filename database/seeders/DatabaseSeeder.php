@@ -14,7 +14,6 @@ use App\Models\Setting;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Str;
 
 class DatabaseSeeder extends Seeder
 {
@@ -113,6 +112,22 @@ class DatabaseSeeder extends Seeder
             'department_id' => null, // Global admin
             'status' => UserStatus::ACTIVE,
             'password' => Hash::make($adminPassword),
+            'plain_password' => $adminPassword,
+            'email_verified_at' => now(),
+        ]);
+
+        // Vice Chancellor (Executive role with universal portal link dashboard)
+        $vcUser = User::create([
+            'name' => 'Prof. Dr. Vice Chancellor',
+            'employee_id' => 'VC-0001',
+            'email' => 'vc@example.org',
+            'phone' => '+92-42-99231304',
+            'designation' => 'Vice Chancellor',
+            'role' => UserRole::VC,
+            'department_id' => null, // Global university executive
+            'status' => UserStatus::ACTIVE,
+            'password' => Hash::make('Password123!'),
+            'plain_password' => 'Password123!',
             'email_verified_at' => now(),
         ]);
 
@@ -127,6 +142,7 @@ class DatabaseSeeder extends Seeder
             'department_id' => $deptModels['ITSW']->id,
             'status' => UserStatus::ACTIVE,
             'password' => Hash::make('Password123!'),
+            'plain_password' => 'Password123!',
             'email_verified_at' => now(),
         ]);
 
@@ -140,6 +156,7 @@ class DatabaseSeeder extends Seeder
             'department_id' => $deptModels['FIN']->id,
             'status' => UserStatus::ACTIVE,
             'password' => Hash::make('Password123!'),
+            'plain_password' => 'Password123!',
             'email_verified_at' => now(),
         ]);
 
@@ -153,6 +170,7 @@ class DatabaseSeeder extends Seeder
             'department_id' => $deptModels['HRD']->id,
             'status' => UserStatus::ACTIVE,
             'password' => Hash::make('Password123!'),
+            'plain_password' => 'Password123!',
             'email_verified_at' => now(),
         ]);
 
@@ -167,6 +185,7 @@ class DatabaseSeeder extends Seeder
             'department_id' => $deptModels['ITSW']->id,
             'status' => UserStatus::ACTIVE,
             'password' => Hash::make('Password123!'),
+            'plain_password' => 'Password123!',
             'email_verified_at' => now(),
         ]);
 
@@ -180,6 +199,7 @@ class DatabaseSeeder extends Seeder
             'department_id' => $deptModels['ITSW']->id,
             'status' => UserStatus::ACTIVE,
             'password' => Hash::make('Password123!'),
+            'plain_password' => 'Password123!',
             'email_verified_at' => now(),
         ]);
 
@@ -193,6 +213,7 @@ class DatabaseSeeder extends Seeder
             'department_id' => $deptModels['ITSW']->id,
             'status' => UserStatus::ACTIVE,
             'password' => Hash::make('Password123!'),
+            'plain_password' => 'Password123!',
             'email_verified_at' => now(),
         ]);
 
@@ -207,6 +228,7 @@ class DatabaseSeeder extends Seeder
             'department_id' => $deptModels['FIN']->id,
             'status' => UserStatus::ACTIVE,
             'password' => Hash::make('Password123!'),
+            'plain_password' => 'Password123!',
             'email_verified_at' => now(),
         ]);
 
@@ -221,6 +243,7 @@ class DatabaseSeeder extends Seeder
             'department_id' => $deptModels['HRD']->id,
             'status' => UserStatus::ACTIVE,
             'password' => Hash::make('Password123!'),
+            'plain_password' => 'Password123!',
             'email_verified_at' => now(),
         ]);
 
@@ -426,7 +449,7 @@ class DatabaseSeeder extends Seeder
             unset($pData['target_depts']);
 
             $portal = Portal::create($pData);
-            if (!empty($targetDeptIds)) {
+            if (! empty($targetDeptIds)) {
                 $portal->targetDepartments()->sync($targetDeptIds);
             }
 

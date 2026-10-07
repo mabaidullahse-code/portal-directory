@@ -15,11 +15,15 @@ class PortalIndex extends Component
     use WithPagination;
 
     public string $search = '';
+
     public string $departmentFilter = 'all';
+
     public string $categoryFilter = 'all';
+
     public string $statusFilter = 'all';
 
     public ?Portal $selectedPortal = null;
+
     public bool $showDetailsModal = false;
 
     public function viewDetails(int $portalId): void

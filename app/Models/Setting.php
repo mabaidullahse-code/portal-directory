@@ -20,7 +20,7 @@ class Setting extends Model
     {
         return Cache::rememberForever("setting.{$key}", function () use ($key, $default) {
             $setting = static::where('key', $key)->first();
-            if (!$setting) {
+            if (! $setting) {
                 return $default;
             }
 

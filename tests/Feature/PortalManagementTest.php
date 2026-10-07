@@ -19,13 +19,21 @@ class PortalManagementTest extends TestCase
     use RefreshDatabase;
 
     protected Department $deptIT;
+
     protected Department $deptFinance;
+
     protected User $admin;
+
     protected User $directorIT;
+
     protected User $employeeA;
+
     protected User $employeeB;
+
     protected User $financeEmployee;
+
     protected Portal $portalIT;
+
     protected Portal $portalFinance;
 
     protected function setUp(): void
@@ -127,9 +135,30 @@ class PortalManagementTest extends TestCase
         ]);
     }
 
+    public function test_can_create_portal_with_custom_typed_target_department(): void
+    {
+        $this->actingAs($this->admin);
+
+        Livewire::test(PortalForm::class)
+            ->set('title', 'External Vendor Portal')
+            ->set('url', 'vendors.test.org')
+            ->set('purpose', 'Vendor billing and procurement')
+            ->set('target_department', 'Procurement & External Contractors')
+            ->set('status', 'active')
+            ->call('save')
+            ->assertHasNoErrors();
+
+        $this->assertDatabaseHas('portals', [
+            'title' => 'External Vendor Portal',
+            'url' => 'https://vendors.test.org',
+            'target_department' => 'Procurement & External Contractors',
+            'user_id' => $this->admin->id,
+        ]);
+    }
+
     public function test_portal_visibility_service_enforces_scoping(): void
     {
-        $visibilityService = new PortalVisibilityService();
+        $visibilityService = new PortalVisibilityService;
 
         // Admin sees all portals
         $adminPortals = $visibilityService->applyVisibleScope(Portal::query(), $this->admin)->get();
@@ -149,7 +178,7 @@ class PortalManagementTest extends TestCase
 
     public function test_director_cannot_view_or_manage_other_department_portal(): void
     {
-        $visibilityService = new PortalVisibilityService();
+        $visibilityService = new PortalVisibilityService;
 
         $this->assertTrue($visibilityService->canView($this->directorIT, $this->portalIT));
         $this->assertFalse($visibilityService->canView($this->directorIT, $this->portalFinance));

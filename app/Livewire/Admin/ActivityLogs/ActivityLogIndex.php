@@ -12,10 +12,13 @@ class ActivityLogIndex extends Component
     use WithPagination;
 
     public string $search = '';
+
     public string $actionFilter = 'all';
+
     public string $userFilter = 'all';
 
     public ?ActivityLog $selectedLog = null;
+
     public bool $showDetailsModal = false;
 
     public function viewDetails(int $id): void
@@ -30,11 +33,11 @@ class ActivityLogIndex extends Component
             ->with('user')
             ->latest('created_at');
 
-        if (!empty($this->search)) {
+        if (! empty($this->search)) {
             $query->where(function ($q) {
                 $q->where('description', 'like', "%{$this->search}%")
-                  ->orWhere('ip_address', 'like', "%{$this->search}%")
-                  ->orWhere('action', 'like', "%{$this->search}%");
+                    ->orWhere('ip_address', 'like', "%{$this->search}%")
+                    ->orWhere('action', 'like', "%{$this->search}%");
             });
         }
 

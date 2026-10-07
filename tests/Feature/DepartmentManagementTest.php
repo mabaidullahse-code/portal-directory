@@ -9,7 +9,6 @@ use App\Models\Department;
 use App\Models\User;
 use App\Services\DepartmentImportService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Storage;
 use Livewire\Livewire;
 use Tests\TestCase;
 
@@ -109,14 +108,14 @@ class DepartmentManagementTest extends TestCase
         ]);
 
         $csvContent = "name,short_name,code,description,status\n"
-            . "New Dept 1,Short 1,NEW1,First new department,active\n"
-            . "Existing Dept,Short 2,EXIST,Duplicate department,active\n" // duplicate name & code
-            . "New Dept 2,Short 3,NEW2,Second new department,active\n";
+            ."New Dept 1,Short 1,NEW1,First new department,active\n"
+            ."Existing Dept,Short 2,EXIST,Duplicate department,active\n" // duplicate name & code
+            ."New Dept 2,Short 3,NEW2,Second new department,active\n";
 
-        $tempFile = tempnam(sys_get_temp_dir(), 'dept_test_') . '.csv';
+        $tempFile = tempnam(sys_get_temp_dir(), 'dept_test_').'.csv';
         file_put_contents($tempFile, $csvContent);
 
-        $service = new DepartmentImportService();
+        $service = new DepartmentImportService;
         $parsed = $service->parseAndValidate($tempFile);
 
         $this->assertEquals(2, $parsed['valid_count']);

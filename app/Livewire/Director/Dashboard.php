@@ -4,7 +4,6 @@ namespace App\Livewire\Director;
 
 use App\Enums\PortalStatus;
 use App\Enums\UserRole;
-use App\Models\Department;
 use App\Models\Portal;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
@@ -24,7 +23,7 @@ class Dashboard extends Component
         $director = Auth::user();
         $department = $director->department;
 
-        if (!$department) {
+        if (! $department) {
             abort(403, 'Director is not assigned to any department.');
         }
 
@@ -40,7 +39,7 @@ class Dashboard extends Component
         // Employees with portal counts
         $employees = User::where('department_id', $department->id)
             ->where('role', UserRole::EMPLOYEE->value)
-            ->with(['portals' => fn($q) => $q->orderBy('sort_order')->orderBy('title')])
+            ->with(['portals' => fn ($q) => $q->orderBy('sort_order')->orderBy('title')])
             ->withCount('portals')
             ->orderByDesc('portals_count')
             ->get();

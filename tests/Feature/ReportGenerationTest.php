@@ -5,12 +5,14 @@ namespace Tests\Feature;
 use App\Enums\PortalStatus;
 use App\Enums\UserRole;
 use App\Enums\UserStatus;
+use App\Filament\Pages\Reports;
 use App\Models\Department;
 use App\Models\Portal;
 use App\Models\User;
 use App\Services\PortalReportService;
 use App\Services\PortalVisibilityService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Livewire\Livewire;
 use Tests\TestCase;
 
 class ReportGenerationTest extends TestCase
@@ -18,13 +20,21 @@ class ReportGenerationTest extends TestCase
     use RefreshDatabase;
 
     protected Department $deptIT;
+
     protected Department $deptFinance;
+
     protected User $admin;
+
     protected User $directorIT;
+
     protected User $employeeA;
+
     protected User $employeeFinance;
+
     protected Portal $portalIT;
+
     protected Portal $portalFinance;
+
     protected PortalReportService $reportService;
 
     protected function setUp(): void
@@ -96,7 +106,7 @@ class ReportGenerationTest extends TestCase
             'department_id' => $this->deptFinance->id,
         ]);
 
-        $this->reportService = new PortalReportService(new PortalVisibilityService());
+        $this->reportService = new PortalReportService(new PortalVisibilityService);
     }
 
     public function test_admin_report_contains_all_departments_and_portals(): void
@@ -134,5 +144,65 @@ class ReportGenerationTest extends TestCase
 
         $this->assertNotEmpty($binary);
         $this->assertStringStartsWith('%PDF', $binary);
+    }
+
+    public function test_livewire_download_pdf_and_html_actions(): void
+    {
+        $this->actingAs($this->admin);
+
+        Livewire::actingAs($this->admin)
+            ->test(Reports::class)
+            ->call('downloadPdf')
+            ->assertFileDownloaded();
+
+        Livewire::actingAs($this->admin)
+            ->test(Reports::class)
+            ->call('downloadExcel')
+            ->assertFileDownloaded();
+
+        Livewire::actingAs($this->admin)
+            ->test(Reports::class)
+            ->call('downloadHtml')
+            ->assertFileDownloaded();
+    }
+
+    public function test_report_handles_portals_with_null_department_and_target_department(): void
+    {
+        Portal::create([
+            'title' => 'Public MBBS Portal',
+            'url' => 'https://admissions.test.org',
+            'purpose' => 'MBBS Admissions',
+            'status' => PortalStatus::ACTIVE,
+            'user_id' => $this->employeeA->id,
+            'department_id' => null,
+            'target_department' => 'Admissions',
+        ]);
+
+        Portal::create([
+            'title' => 'Universal Institutional Portal',
+            'url' => 'https://universal.test.org',
+            'purpose' => 'General purpose',
+            'status' => PortalStatus::ACTIVE,
+            'user_id' => null,
+            'department_id' => null,
+            'target_department' => null,
+        ]);
+
+        $this->actingAs($this->admin);
+
+        Livewire::actingAs($this->admin)
+            ->test(Reports::class)
+            ->assertOk()
+            ->assertSee('Admissions')
+            ->assertSee('General & Universal Systems')
+            ->assertSee('Public MBBS Portal')
+            ->assertSee('Universal Institutional Portal');
+
+        $html = $this->reportService->generateStandaloneHtml($this->admin);
+        $this->assertStringContainsString('Admissions', $html);
+        $this->assertStringContainsString('General &amp; Universal Systems', $html);
+
+        $pdf = $this->reportService->generatePdf($this->admin);
+        $this->assertNotEmpty($pdf->output());
     }
 }

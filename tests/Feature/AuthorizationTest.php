@@ -16,12 +16,19 @@ class AuthorizationTest extends TestCase
     use RefreshDatabase;
 
     protected User $admin;
+
     protected User $directorIT;
+
     protected User $directorFinance;
+
     protected User $employeeA;
+
     protected User $employeeB;
+
     protected Department $deptIT;
+
     protected Department $deptFinance;
+
     protected Portal $portalA;
 
     protected function setUp(): void

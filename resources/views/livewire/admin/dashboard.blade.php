@@ -1,5 +1,6 @@
 <div>
-    <x-slot name="header">
+    <!-- Page Header -->
+    <div class="mb-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4 border-b border-slate-200 pb-5">
         <div>
             <h1 class="text-xl font-bold text-slate-900">Executive Administration Dashboard</h1>
             <p class="text-xs text-slate-500">System overview, organizational telemetry, portal health, and recent operations.</p>
@@ -14,7 +15,7 @@
                 <span>Generate Report</span>
             </a>
         </div>
-    </x-slot>
+    </div>
 
     <!-- Stat Cards Row -->
     <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4 mb-6">
@@ -86,7 +87,7 @@
                     <h3 class="text-sm font-bold text-slate-900">Portals by Department</h3>
                     <p class="text-[11px] text-slate-500">Departmental breakdown of registered systems</p>
                 </div>
-                <a href="{{ route('admin.departments.index') }}" class="text-xs text-blue-600 hover:text-blue-500 font-semibold">View all →</a>
+                <a href="{{ route('filament.admin.resources.departments.index') }}" class="text-xs text-blue-600 hover:text-blue-500 font-semibold">View all →</a>
             </div>
 
             <div class="space-y-3">
@@ -174,7 +175,7 @@
                     <h3 class="text-sm font-bold text-slate-900">Recent System Activity</h3>
                     <p class="text-[11px] text-slate-500">Immutable audit log of user & portal events</p>
                 </div>
-                <a href="{{ route('admin.activity-logs.index') }}" class="text-xs text-blue-600 hover:text-blue-500 font-semibold">View audit trail →</a>
+                <a href="{{ route('filament.admin.resources.activity-logs.index') }}" class="text-xs text-blue-600 hover:text-blue-500 font-semibold">View audit trail →</a>
             </div>
 
             <div class="divide-y divide-slate-100">

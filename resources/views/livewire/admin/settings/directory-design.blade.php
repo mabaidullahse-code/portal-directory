@@ -1,21 +1,29 @@
 <div>
-    <x-slot name="header">
+    <div class="mb-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
             <h1 class="text-xl font-bold text-slate-900">Portal Directory Design Settings</h1>
             <p class="text-xs text-slate-500">Select the visual architectural presentation for the internal organizational portal directory.</p>
         </div>
         <div class="flex items-center gap-2">
-            <button type="button" wire:click="saveDefaultDesign"
-                    class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-semibold text-white bg-blue-600 hover:bg-blue-500 transition shadow-xs">
+            <button type="button" wire:click="saveDefaultDesign" wire:loading.attr="disabled"
+                    class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-semibold text-white bg-blue-600 hover:bg-blue-500 transition shadow-xs cursor-pointer">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                <span>Save As Default Design</span>
+                <span wire:loading.remove wire:target="saveDefaultDesign">Save As Default Design</span>
+                <span wire:loading wire:target="saveDefaultDesign">Saving...</span>
             </button>
             <a href="{{ route('directory.index') }}"
                class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold text-slate-700 bg-white border border-slate-200 hover:bg-slate-50 transition shadow-xs">
                 <span>View Live Directory ↗</span>
             </a>
         </div>
-    </x-slot>
+    </div>
+
+    @if (session()->has('success'))
+        <div class="mb-6 p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-semibold flex items-center gap-2">
+            <svg class="w-4 h-4 text-emerald-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+            <span>{{ session('success') }}</span>
+        </div>
+    @endif
 
     <!-- Design Selector Grid -->
     <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs mb-8">
@@ -86,6 +94,14 @@
                 @include('portal.designs.compact', ['departments' => $departments])
             @elseif ($selectedPreviewDesign === 'dashboard')
                 @include('portal.designs.dashboard', ['departments' => $departments])
+            @elseif ($selectedPreviewDesign === 'cyber_matrix')
+                @include('portal.designs.cyber-matrix', ['departments' => $departments])
+            @elseif ($selectedPreviewDesign === 'constellation')
+                @include('portal.designs.constellation', ['departments' => $departments])
+            @elseif ($selectedPreviewDesign === 'prism_bento')
+                @include('portal.designs.prism-bento', ['departments' => $departments])
+            @elseif ($selectedPreviewDesign === 'terminal_console')
+                @include('portal.designs.terminal-console', ['departments' => $departments])
             @endif
         </div>
     </div>

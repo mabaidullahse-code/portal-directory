@@ -18,7 +18,7 @@
     <div x-data="{ mobileMenuOpen: false, userDropdownOpen: false }" class="flex-1 flex flex-col">
         <!-- Top Navbar -->
         <header class="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-xs">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="w-full px-4 sm:px-6 lg:px-8">
                 <div class="flex justify-between h-16">
                     <!-- Brand & Left items -->
                     <div class="flex items-center gap-4">
@@ -30,10 +30,8 @@
                         </button>
 
                         <a href="{{ route('directory.index') }}" class="flex items-center gap-3 group">
-                            <div class="w-9 h-9 rounded-lg bg-slate-900 flex items-center justify-center text-white shadow-xs group-hover:bg-blue-600 transition">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
-                                </svg>
+                            <div class="w-9 h-9 rounded-lg bg-white flex items-center justify-center shadow-xs border border-slate-200 p-1 overflow-hidden shrink-0">
+                                <img src="{{ asset('images/uhs-logo.png') }}" alt="UHS Logo" class="w-full h-full object-contain">
                             </div>
                             <div>
                                 <span class="font-bold text-slate-900 text-base tracking-tight block leading-tight">
@@ -119,8 +117,8 @@
             </div>
         </header>
 
-        <!-- Main Body Wrapper with Sidebar -->
-        <div class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 flex gap-6">
+        <!-- Main Body Wrapper with Sidebar (Full width) -->
+        <div class="flex-1 w-full px-4 sm:px-6 lg:px-8 py-6 flex gap-6">
             @auth
                 <!-- Desktop Sidebar -->
                 <aside class="hidden lg:block w-64 shrink-0">
@@ -187,19 +185,12 @@
                     </div>
                 @endif
 
-                <!-- Page Header / Breadcrumb if provided -->
-                @isset($header)
-                    <div class="mb-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-                        {{ $header }}
-                    </div>
-                @endisset
-
                 {{ $slot }}
             </main>
         </div>
 
         <footer class="mt-auto border-t border-slate-200 bg-white py-4">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-xs text-slate-500">
+            <div class="w-full px-4 sm:px-6 lg:px-8 text-center text-xs text-slate-500">
                 &copy; {{ date('Y') }} {{ config('app.name', 'Portal Directory') }}. Professional Enterprise Solution.
             </div>
         </footer>

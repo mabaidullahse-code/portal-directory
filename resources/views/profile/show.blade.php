@@ -1,10 +1,8 @@
 <x-app-layout title="User Profile">
-    <x-slot name="header">
-        <div>
-            <h1 class="text-xl font-bold text-slate-900">User Profile</h1>
-            <p class="text-xs text-slate-500">Manage your personal account credentials and display details.</p>
-        </div>
-    </x-slot>
+    <div class="mb-6">
+        <h1 class="text-xl font-bold text-slate-900">User Profile</h1>
+        <p class="text-xs text-slate-500">Manage your personal account credentials and display details.</p>
+    </div>
 
     <div class="max-w-4xl space-y-6">
         <!-- Account Summary Banner -->

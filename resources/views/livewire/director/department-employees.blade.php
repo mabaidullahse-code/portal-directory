@@ -1,10 +1,11 @@
 <div>
-    <x-slot name="header">
+    <!-- Page Header -->
+    <div class="mb-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4 border-b border-slate-200 pb-5">
         <div>
             <h1 class="text-xl font-bold text-slate-900">Employees of {{ $department->name }}</h1>
             <p class="text-xs text-slate-500">Personnel roster and assigned systems under your direct departmental supervision.</p>
         </div>
-    </x-slot>
+    </div>
 
     <!-- Search Bar -->
     <div class="bg-white rounded-2xl border border-slate-200 p-4 shadow-xs mb-6 max-w-md">

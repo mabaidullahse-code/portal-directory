@@ -1,5 +1,5 @@
 <div>
-    <x-slot name="header">
+    <div class="mb-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
             <h1 class="text-xl font-bold text-slate-900">
                 {{ $isEditing ? 'Edit Portal: ' . $portal->title : 'Register New Organizational Portal' }}
@@ -10,7 +10,7 @@
            class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold text-slate-700 bg-white border border-slate-200 hover:bg-slate-50 transition shadow-xs">
             <span>← Cancel & Return</span>
         </a>
-    </x-slot>
+    </div>
 
     <form wire:submit="save" class="space-y-6">
         <!-- 1. Primary Information Card -->
@@ -77,52 +77,19 @@
             </div>
         </div>
 
-        <!-- 2. Ownership & Department Card -->
+        <!-- 2. Target Department Card -->
         <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-xs">
             <h2 class="text-sm font-bold text-slate-900 mb-4 pb-2 border-b border-slate-100 flex items-center gap-2">
-                <span>🏢 Ownership & Departmental Alignment</span>
+                <span>🏢 Target Department</span>
             </h2>
 
-            @if(auth()->user()->isAdmin())
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-700">Portal Owner *</label>
-                        <select wire:model.live="user_id"
-                                class="mt-1 block w-full rounded-lg border border-slate-300 px-3 py-2 text-xs text-slate-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500">
-                            @foreach($ownerUsers as $u)
-                                <option value="{{ $u->id }}">{{ $u->name }} ({{ $u->role->label() }} - {{ $u->department?->short_name ?: 'Global' }})</option>
-                            @endforeach
-                        </select>
-                        @error('user_id') <span class="text-xs text-rose-600">{{ $message }}</span> @enderror
-                    </div>
-
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-700">Owner Department (Automatically bound)</label>
-                        <select wire:model="department_id"
-                                class="mt-1 block w-full rounded-lg border border-slate-300 px-3 py-2 text-xs text-slate-900 bg-slate-50 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500">
-                            <option value="">Global / Select Department...</option>
-                            @foreach($departments as $dept)
-                                <option value="{{ $dept->id }}">{{ $dept->name }} ({{ $dept->code }})</option>
-                            @endforeach
-                        </select>
-                        @error('department_id') <span class="text-xs text-rose-600">{{ $message }}</span> @enderror
-                    </div>
-                </div>
-            @else
-                <div class="p-4 bg-slate-50 border border-slate-200 rounded-xl flex items-center gap-4">
-                    <div class="w-10 h-10 rounded-xl bg-blue-600 text-white font-bold flex items-center justify-center text-sm shadow-xs">
-                        {{ auth()->user()->initials }}
-                    </div>
-                    <div>
-                        <div class="text-xs font-bold text-slate-900">
-                            Registered by {{ auth()->user()->name }}
-                        </div>
-                        <div class="text-xs text-slate-500 mt-0.5">
-                            Automatically bound to your department: <strong>{{ auth()->user()->department?->name ?? 'None' }}</strong>
-                        </div>
-                    </div>
-                </div>
-            @endif
+            <div>
+                <label class="block text-xs font-semibold text-slate-700">Target Department</label>
+                <p class="text-[11px] text-slate-500 mb-2">Type any target department or audience for this portal (can differ from internal system departments).</p>
+                <input type="text" wire:model="target_department" placeholder="e.g. Examinations Wing, Finance & Accounts, General Public, Student Affairs"
+                       class="mt-1 block w-full rounded-lg border border-slate-300 px-3 py-2 text-xs text-slate-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500">
+                @error('target_department') <span class="text-xs text-rose-600">{{ $message }}</span> @enderror
+            </div>
         </div>
 
         <!-- 3. Availability Schedule & Target Audiences -->

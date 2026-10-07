@@ -14,6 +14,7 @@ class MyPortals extends Component
     use WithPagination;
 
     public string $search = '';
+
     public string $statusFilter = 'all';
 
     public function toggleStatus(int $portalId): void

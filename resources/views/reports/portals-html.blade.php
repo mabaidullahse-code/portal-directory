@@ -425,37 +425,37 @@
 
         <div id="reportContent">
             @forelse($departments as $deptData)
-                <section class="dept-section" data-dept="{{ strtolower($deptData['department']->name) }}">
+                <section class="dept-section" data-dept="{{ strtolower($deptData['department']?->name ?? 'general') }}">
                     <div class="dept-header">
                         <div class="dept-title">
-                            <span>🏢 {{ $deptData['department']->name }}</span>
-                            <span class="dept-code">{{ $deptData['department']->code }}</span>
+                            <span>🏢 {{ $deptData['department']?->name ?? 'General & Universal Systems' }}</span>
+                            <span class="dept-code">{{ $deptData['department']?->code ?? 'UNIV' }}</span>
                         </div>
                         <div class="card-meta">
-                            {{ $deptData['total_portals'] }} Portals ({{ $deptData['active_portals'] }} Active)
+                            {{ $deptData['total_portals'] ?? 0 }} Portals ({{ $deptData['active_portals'] ?? 0 }} Active)
                         </div>
                     </div>
 
                     <div class="dept-content">
                         @foreach($deptData['employees'] as $empData)
-                            <div class="emp-block" data-employee="{{ strtolower($empData['employee']->name) }}">
+                            <div class="emp-block" data-employee="{{ strtolower($empData['employee']?->name ?? 'staff') }}">
                                 <div class="emp-banner">
                                     <div class="emp-info">
                                         <div class="emp-avatar">
-                                            {{ $empData['employee']->initials }}
+                                            {{ $empData['employee']?->initials ?? 'U' }}
                                         </div>
                                         <div>
-                                            <div class="emp-name">{{ $empData['employee']->name }}</div>
+                                            <div class="emp-name">{{ $empData['employee']?->name ?? 'Staff' }}</div>
                                             <div class="emp-role">
-                                                {{ $empData['employee']->designation ?: $empData['employee']->role->label() }}
-                                                @if($empData['employee']->employee_id)
+                                                {{ $empData['employee']?->designation ?: ($empData['employee']?->role?->label() ?? 'Staff') }}
+                                                @if($empData['employee']?->employee_id)
                                                     • ID: {{ $empData['employee']->employee_id }}
                                                 @endif
                                             </div>
                                         </div>
                                     </div>
                                     <div class="card-meta">
-                                        {{ $empData['total'] }} Portal(s)
+                                        {{ $empData['total'] ?? 0 }} Portal(s)
                                     </div>
                                 </div>
 

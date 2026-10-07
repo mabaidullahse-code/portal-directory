@@ -28,6 +28,7 @@ class Portal extends Model
         'category_id',
         'user_id',
         'department_id',
+        'target_department',
         'contact_person',
         'contact_email',
         'contact_phone',
@@ -53,7 +54,7 @@ class Portal extends Model
         static::creating(function (Portal $portal) {
             if (empty($portal->slug)) {
                 $baseSlug = Str::slug($portal->title);
-                $portal->slug = $baseSlug . '-' . Str::random(5);
+                $portal->slug = $baseSlug.'-'.Str::random(5);
             }
         });
     }
@@ -110,10 +111,16 @@ class Portal extends Model
     public function getSafeUrlAttribute(): string
     {
         $url = trim($this->url);
-        if (!preg_match('~^https?://~i', $url)) {
-            return 'https://' . $url;
+        if (! preg_match('~^https?://~i', $url)) {
+            return 'https://'.$url;
         }
+
         return $url;
+    }
+
+    public function getDepartmentNameAttribute(): ?string
+    {
+        return $this->target_department ?: ($this->department?->name);
     }
 
     public function scopeActive(Builder $query): Builder
@@ -144,19 +151,20 @@ class Portal extends Model
 
         return $query->where(function (Builder $q) use ($term) {
             $q->where('title', 'like', "%{$term}%")
-              ->orWhere('purpose', 'like', "%{$term}%")
-              ->orWhere('url', 'like', "%{$term}%")
-              ->orWhere('description', 'like', "%{$term}%")
-              ->orWhereHas('user', function (Builder $userQuery) use ($term) {
-                  $userQuery->where('name', 'like', "%{$term}%");
-              })
-              ->orWhereHas('department', function (Builder $deptQuery) use ($term) {
-                  $deptQuery->where('name', 'like', "%{$term}%")
-                            ->orWhere('short_name', 'like', "%{$term}%");
-              })
-              ->orWhereHas('category', function (Builder $catQuery) use ($term) {
-                  $catQuery->where('name', 'like', "%{$term}%");
-              });
+                ->orWhere('purpose', 'like', "%{$term}%")
+                ->orWhere('url', 'like', "%{$term}%")
+                ->orWhere('description', 'like', "%{$term}%")
+                ->orWhere('target_department', 'like', "%{$term}%")
+                ->orWhereHas('user', function (Builder $userQuery) use ($term) {
+                    $userQuery->where('name', 'like', "%{$term}%");
+                })
+                ->orWhereHas('department', function (Builder $deptQuery) use ($term) {
+                    $deptQuery->where('name', 'like', "%{$term}%")
+                        ->orWhere('short_name', 'like', "%{$term}%");
+                })
+                ->orWhereHas('category', function (Builder $catQuery) use ($term) {
+                    $catQuery->where('name', 'like', "%{$term}%");
+                });
         });
     }
 }

@@ -33,7 +33,7 @@ class DepartmentPolicy
 
     public function delete(User $user, Department $department): bool
     {
-        if (!$user->isAdmin()) {
+        if (! $user->isAdmin()) {
             return false;
         }
 

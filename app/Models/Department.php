@@ -67,9 +67,9 @@ class Department extends Model
 
         return $query->where(function (Builder $q) use ($term) {
             $q->where('name', 'like', "%{$term}%")
-              ->orWhere('short_name', 'like', "%{$term}%")
-              ->orWhere('code', 'like', "%{$term}%")
-              ->orWhere('description', 'like', "%{$term}%");
+                ->orWhere('short_name', 'like', "%{$term}%")
+                ->orWhere('code', 'like', "%{$term}%")
+                ->orWhere('description', 'like', "%{$term}%");
         });
     }
 
